@@ -1,0 +1,10 @@
+zoho:
+ host: "meeting.zoho.com"
+ path: "/api/private/json/meetings/createMeeting"
+ 
+email:
+  username: "mustafakukshi555@gmail.com"
+  password: "testingteam"
+   
+ 
+ 

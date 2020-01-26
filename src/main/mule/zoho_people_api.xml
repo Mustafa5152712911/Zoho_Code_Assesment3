@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="zoho_people_apiFlow" doc:id="13f64960-f47b-44a0-8122-4f2f6f4098b5" >
+		<http:listener doc:name="Listener" doc:id="3df4ee60-986c-4a8f-b4d2-49ed9b58b619" path="/zoho" allowedMethods="POST" config-ref="HTTP_Listener_config"/>
+		<http:request method="POST" doc:name="Create Meeting" doc:id="10a76574-a2ac-47ed-a65d-eb2bccad7c92" path="${zoho.path}" config-ref="HTTP_Request_configuration">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"topic" : CodeFlow,
+	"apikey" : 9ac2fde0af02d58d3932870416bf0d85,
+	"authtoken" : 966585b701d88c1604f8cca0451c6cc1
+}]]]></http:uri-params>
+		</http:request>
+		<set-payload value="#[output application/json --- payload]" doc:name="Set Payload" doc:id="3f65b76c-e1d5-4cc4-b339-2721320dbe73" />
+		<email:send doc:id="0a1e7d66-bc08-4b2d-8225-d2dfdd3a9d9d" fromAddress="mustafakukshi555@gmail.com" subject="Invitation for the Code Flow Generation Dmo" doc:name="Email_Sent" config-ref="Email_SMTP">
+			<email:to-addresses >
+				<email:to-address value="mustafakukshi555@gmail.com" />
+			</email:to-addresses>
+		</email:send>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2be4e048-4f08-46b7-936c-f7f4c0e7db6a" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="68883a61-86e6-4867-a3c4-274a797424e6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Unable to Create The Meeting...!!!"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
